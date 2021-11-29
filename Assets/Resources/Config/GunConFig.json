@@ -1,0 +1,30 @@
+[
+  {
+    "id":1,
+    "weaponName" : "Hand Gun",
+    "description" : "Hand Gun",
+    "prefabName" : "HandGun",
+    "range" : 50,
+    "damage" : 30,
+    "accuracy" : 80,
+    "rateOfFire" : 280,
+    "replaceBulletTime" : 1.8,
+    "criticalRate" : 50,
+    "clipSizeBullet" : 12,
+    "totalBullet" : 192
+  },
+    {
+    "id":2,
+    "weaponName" : "Riffe",
+    "description" : "Riffe",
+    "prefabName" : "RiffeGun",
+    "range" : 100,
+    "damage" : 35,
+    "accuracy" : 65,
+    "rateOfFire" : 600,
+    "replaceBulletTime" : 3,
+    "criticalRate" : 50,
+    "clipSizeBullet" : 30,
+    "totalBullet" : 240
+  }
+]
