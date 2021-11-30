@@ -1,10 +1,20 @@
-﻿using System.Collections;
+﻿using DG.Tweening;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerControl : Actor
+public class PlayerControl : MonoBehaviour
 {
     public static PlayerControl instance;
+    int hp_;
+    int totalHP;
+
+    public bool isHurt;
+    AudioSource m_AudioSource;
+    public bool isDead;
+
+    public static event Action<int> onHPPlayerChange;
     [HideInInspector] public Transform trans;
 
     CharacterController m_CharacterController;
@@ -12,20 +22,38 @@ public class PlayerControl : Actor
     [SerializeField] float speed = 2f;
     [SerializeField] float m_StickToGroundForce;
     [SerializeField] float m_GravityMultiplier;
-    protected override void Awake()
+
+    public static bool isAutoFire = true;
+
+    public int currentHP
+    {
+        set
+        {
+            hp_ = value;
+            onHPPlayerChange?.Invoke(value);
+        }
+        get
+        {
+            return hp_;
+        }
+    }
+
+    void Awake()
     {
         instance = this;
         trans = transform;
         m_CharacterController = GetComponent<CharacterController>();
+        m_AudioSource = GetComponent<AudioSource>();
+        trans = transform;
+        totalHP = 150;
+        hp_ = totalHP;
     }
 
-    protected override void Start()
+    void Start()
     {
-        
-        base.Start();
     }
 
-    protected override void Update()
+    void Update()
     {
         // always move along the camera forward as it is the direction that it being aimed at
         Vector3 desiredMove = transform.forward * OnDragJoystick.inputDragTarget.y + transform.right * OnDragJoystick.inputDragTarget.x;
@@ -51,4 +79,20 @@ public class PlayerControl : Actor
         }
         m_CharacterController.Move(m_MoveDir * Time.fixedDeltaTime);
     }
+  
+    public void OnPlayerDamage(int damage)
+    {
+        if (currentHP > 0)
+        {
+            isHurt = true;
+            currentHP -= damage;
+        }
+        if (!isDead && currentHP <= 0)
+        {
+            isDead = true;
+            currentHP = 0;
+        }
+    }
+
+    
 }

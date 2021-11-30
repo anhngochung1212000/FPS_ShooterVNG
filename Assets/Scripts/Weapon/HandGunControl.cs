@@ -6,11 +6,11 @@ public class HandGunControl : WeaponBehaviour
 {
     public override void OnSetupGun(GunDataBase dataBase)
     {
-        IHandGun iwp = new IHandGun();
-        iWeaponHandle = iwp;
-        iWeaponReload = iwp;
-        iWeaponHandle.SetupWeapon(this);
-
         base.OnSetupGun(dataBase);
+    }
+
+    public override void Update()
+    {
+        base.Update();
     }
 }

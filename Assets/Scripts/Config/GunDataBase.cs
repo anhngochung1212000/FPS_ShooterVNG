@@ -6,6 +6,7 @@ public class GunDataBase
 {
     public int id;
     public string weaponName;
+    public string imageName;
     public string description;
     public string prefabName;
     public float range;

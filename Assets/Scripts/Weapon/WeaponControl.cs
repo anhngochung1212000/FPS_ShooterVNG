@@ -2,12 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using System;
+
 public class WeaponControl : MonoBehaviour
 {
-    public int indexGun = -1;
+    static int indexGun = -1;
     [SerializeField] Transform gunContain;
-    Dictionary<int, WeaponBehaviour> arrWeapons = new Dictionary<int, WeaponBehaviour>();
-    WeaponBehaviour currentWeapon;
+    static Dictionary<int, WeaponBehaviour> arrWeapons = new Dictionary<int, WeaponBehaviour>();
+    public static WeaponBehaviour currentWeapon;
+    public static event Action<WeaponBehaviour> onChangeWeapon;
+    public static event Action<WeaponBehaviour> onUpdateBulletAmount;
 
     void Start()
     {
@@ -22,7 +26,7 @@ public class WeaponControl : MonoBehaviour
             return;
 
         indexGun = 0;
-        currentWeapon = arrWeapons.ElementAt(0).Value;
+        currentWeapon = arrWeapons.ElementAt(indexGun).Value;
         currentWeapon.gameObject.SetActive(true);
     }
 
@@ -38,5 +42,25 @@ public class WeaponControl : MonoBehaviour
         arrWeapons.Add(configWeapon.id,weaponAbstract);
         gun.SetActive(false);
        
+    }
+
+    public static void UpdateBulletAmount(WeaponBehaviour weaponBehaviour)
+    {
+        onUpdateBulletAmount?.Invoke(weaponBehaviour);
+    }
+
+    public static void ChangeGun()
+    {
+        indexGun++;
+        if (indexGun > arrWeapons.Count - 1)
+            indexGun = 0;
+
+        if (currentWeapon != null)
+            currentWeapon.HideGun();
+
+        currentWeapon = arrWeapons.ElementAt(indexGun).Value;
+        currentWeapon.gameObject.SetActive(true);
+
+        onChangeWeapon?.Invoke(currentWeapon);
     }
 }
