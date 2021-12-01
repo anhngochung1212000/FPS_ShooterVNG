@@ -15,7 +15,7 @@ public class Zombie01AttackState : FSMState
    
     public override void OnUpdate()
     {
-        if (parent.timerCountRof > parent.rof && !PlayerControl.instance.isDead)
+        if (!parent.isDead && parent.timerCountRof > parent.rof && !PlayerControl.isDead && !MissionControl.isVictory)
         {
             //parent.audioSource.PlayOneShot(parent.attackSound);
             parent.timerCountRof = 0;

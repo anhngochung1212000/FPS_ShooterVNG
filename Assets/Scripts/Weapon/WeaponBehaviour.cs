@@ -19,7 +19,6 @@ public class WeaponBehaviour : MonoBehaviour
 {
     public float rof;
     public float accuracy = 80.0f;
-    public float currentAccuracy;
     public float accuracyDropPerShot = 1.0f;
     public float accuracyRecoverRate = 0.1f;
     public float accuracyViewportDrop = 0.1f;
@@ -57,6 +56,7 @@ public class WeaponBehaviour : MonoBehaviour
         this.dataBase = dataBase;
         fpsCam = GetComponentInParent<Camera>();
         rof = 60 / dataBase.rateOfFire;
+        accuracy = dataBase.accuracy;
         poolBullet = PoolManager.Pools["PoolBulletPlayer"];
         countBulletCurent = dataBase.clipSizeBullet;
         CreatePrefabPool(prefabImpactEnemy);
@@ -77,7 +77,7 @@ public class WeaponBehaviour : MonoBehaviour
     public virtual void Update() {
         timeFire += Time.deltaTime;
 
-        if(PlayerControl.isAutoFire)
+        if(PlayerControl.isAutoFire && !PlayerControl.isDead && !MissionControl.isVictory)
             DetectEnemyAuto();
     }
 
@@ -142,7 +142,7 @@ public class WeaponBehaviour : MonoBehaviour
         WeaponControl.UpdateBulletAmount(this);
 
         //Fire Action
-        float accuracyVary = (100 - currentAccuracy) / 100 * accuracyViewportDrop;
+        float accuracyVary = (100 - accuracy) / 100 * accuracyViewportDrop;
         accuracyVary *= 100;
         float x = UnityEngine.Random.Range(-0.01f, 0.01f) * accuracyVary / 1.5f;
         float y = UnityEngine.Random.Range(-0.01f, 0.01f) * accuracyVary / 1.5f;

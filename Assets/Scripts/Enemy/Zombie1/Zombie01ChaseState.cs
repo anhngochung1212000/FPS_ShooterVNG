@@ -13,11 +13,11 @@ public class Zombie01ChaseState : FSMState
     }
     public override void OnUpdate()
     {
-        if (!parent.isAttack)
+        if (!parent.isAttack && !PlayerControl.isDead && !MissionControl.isVictory)
         {
             //parent.trans.Translate(Vector3.forward * parent.moveNavi.agent.speed * Time.deltaTime);
             parent.moveNavi.agent.isStopped = false;
-            parent.moveNavi.agent.SetDestination(PlayerControl.instance.trans.position);
+            parent.moveNavi.agent.SetDestination(PlayerControl.Instance.trans.position);
         }
 
     }

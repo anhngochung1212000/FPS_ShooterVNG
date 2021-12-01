@@ -7,43 +7,46 @@ using UnityEngine.UI;
 using UnityEditor;
 public class OnRotateCamera : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
-   
+
     private Vector3 ogrinPos;
     private Vector2 ogrinPosMouse;
     public static Vector3 deltaMouse;
     public static bool isRotateCamera = false;
     public static bool isStartRotateCamera = false;
-    public static int indexTouch=-1;
+    public static int indexTouch = -1;
     private void Start()
     {
-        
-  
+
+
     }
-    
+
     private void Update()
     {
 
-        if (!isRotateCamera)
-            return;
-        if (indexTouch != -1)
+        if (isRotateCamera)
         {
-            Touch touchRotateCamera;
-            if (indexTouch > Input.touches.Length - 1)
+            if (indexTouch != -1)
             {
-                touchRotateCamera = Input.GetTouch(Input.touches.Length - 1);
+                Touch touchRotateCamera;
+                if (indexTouch > Input.touches.Length - 1)
+                {
+                    touchRotateCamera = Input.GetTouch(Input.touches.Length - 1);
+                }
+                else
+                {
+                    touchRotateCamera = Input.GetTouch(indexTouch);
+
+                }
+                deltaMouse = touchRotateCamera.position - ogrinPosMouse;
+                ogrinPosMouse = touchRotateCamera.position;
             }
             else
             {
-                touchRotateCamera = Input.GetTouch(indexTouch);
-
+                deltaMouse = new Vector2(Input.mousePosition.x, Input.mousePosition.y) - ogrinPosMouse;
+                ogrinPosMouse = Input.mousePosition;
             }
-            deltaMouse = touchRotateCamera.position - ogrinPosMouse;
-            ogrinPosMouse = touchRotateCamera.position;
-        }
-        else
-        {
-            deltaMouse = new Vector2(Input.mousePosition.x, Input.mousePosition.y) - ogrinPosMouse;
-            ogrinPosMouse = Input.mousePosition;
+
+
         }
 
 
@@ -56,7 +59,7 @@ public class OnRotateCamera : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
         isStartRotateCamera = false;
         if (Input.touchCount > 0)
         {
-            if (OnDragJoystick.inputDragTarget!=Vector2.zero)
+            if (OnDragJoystick.inputDragTarget != Vector2.zero)
             {
 
                 indexTouch = 1;
@@ -68,19 +71,32 @@ public class OnRotateCamera : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
             }
         }
         //else
-           // indexTouch = -1;
-        
-        ogrinPosMouse = indexTouch == -1 ? eventData.position: Input.GetTouch(indexTouch).position;
+        // indexTouch = -1;
+
+        ogrinPosMouse = indexTouch == -1 ? eventData.position : Input.GetTouch(indexTouch).position;
     }
     public void OnDrag(PointerEventData eventData)
     {
+        if (isRotateCamera)
+        {
+            //Debug.Log(indexTouch);
+            //if (indexTouch == -1)
+            //{
+
+            //    deltaMouse = eventData.position - ogrinPosMouse;
+            //    ogrinPosMouse = eventData.position;
+            //}
+
+
+
+        }
     }
     public void OnEndDrag(PointerEventData eventData)
     {
         if (isRotateCamera)
             EndRotateCamera();
     }
-    
+
     public void EndRotateCamera()
     {
         isStartRotateCamera = true;

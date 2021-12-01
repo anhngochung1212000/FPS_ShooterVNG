@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class EnemyControl : FSMSystem
@@ -55,30 +56,37 @@ public class EnemyControl : FSMSystem
     {
 
     }
+
     public override void SystemUpdate()
     {
         base.SystemUpdate();
     }
 
-    IEnumerator SetDisovleEnemy()
+    public void EnemyOnDead(bool hasEffect)
     {
-        yield return new WaitForSeconds(0.5f);
+        isDead = true;
+        moveNavi.Stop();
+        SpawCharacterControl.enemyList.Remove(this);
+        if(!hasEffect)
+        {
+            Destroy(gameObject);
+            return;
+        }  
         arrRendererMesh = GetComponentsInChildren<Renderer>();
         Material newMaterial = UnityEngine.Object.Instantiate(materialDissovle);
         for (int i = 0; i < arrRendererMesh.Length; i++)
         {
-            if (arrRendererMesh[i].gameObject.tag == "DissolveMesh")
-            {
-                arrRendererMesh[i].material = newMaterial;
-                arrRendererMesh[i].material.SetFloat("_DissolveWidth", 0.07f);
-                StartCoroutine("WaitChangeDissolveAmount");
-            }
-
+            if (arrRendererMesh[i].gameObject.tag != "DissolveMesh")
+                continue;
+            arrRendererMesh[i].material = newMaterial;
+            arrRendererMesh[i].material.SetFloat("_DissolveWidth", 0.07f);
+            WaitChangeDissolveAmount();
         }
     }
-    IEnumerator WaitChangeDissolveAmount()
+
+    async void WaitChangeDissolveAmount()
     {
-        yield return new WaitForSeconds(0.1f);
+        await Task.Delay(100);
         float amount = 0;
         while (amount < 1)
         {
@@ -88,10 +96,8 @@ public class EnemyControl : FSMSystem
             {
                 arrRendererMesh[i].material.SetFloat("_DissolveAmount", amount);
             }
-            yield return null;
+            await Task.Yield();
         }
-        //MiniMapControl.instance.RemoveItem(indexInMiniMap.ToString());
-        //EnemyDie?.Invoke();
         Destroy(gameObject);
     }
 
@@ -103,7 +109,7 @@ public class EnemyControl : FSMSystem
 
     public void LookPlayer()
     {
-        Vector3 target = new Vector3(PlayerControl.instance.trans.position.x, trans.position.y, PlayerControl.instance.trans.transform.position.z);
+        Vector3 target = new Vector3(PlayerControl.Instance.trans.position.x, trans.position.y, PlayerControl.Instance.trans.transform.position.z);
         Vector3 dirEnemy = target - trans.position;
         Quaternion quaternionLook = Quaternion.LookRotation(dirEnemy, Vector3.up);
         trans.localRotation = quaternionLook; //Quaternion.RotateTowards(trans.localRotation, quaternionLook, Time.deltaTime * 360);// 

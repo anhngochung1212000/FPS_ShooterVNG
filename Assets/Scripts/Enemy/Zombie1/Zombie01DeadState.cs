@@ -9,8 +9,8 @@ public class Zombie01DeadState : FSMState
     public Zombie01Control parent;
     public override void OnEnter()
     {
-        Debug.LogError("dead");
         parent.animator.SetTrigger("Dead");
-        parent.StartCoroutine("SetDisovleEnemy");
+        parent.EnemyOnDead(true);
+        MissionControl.CountEnemy++;
     }
 }

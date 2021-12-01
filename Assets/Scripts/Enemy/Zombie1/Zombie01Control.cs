@@ -66,7 +66,7 @@ public class Zombie01Control : EnemyControl
             isWalk = false;
             StopCoroutine("StartFOV");
             fieldOfView.viewMeshFilter.gameObject.SetActive(false);
-            float distanceToPlayer = Vector3.Distance(trans.position, PlayerControl.instance.trans.position);
+            float distanceToPlayer = Vector3.Distance(trans.position, PlayerControl.Instance.trans.position);
             if (distanceToPlayer < rangeAttack)
             {
                 if (currentState != attackState)
@@ -101,8 +101,8 @@ public class Zombie01Control : EnemyControl
     IEnumerator PlayerTakeDamge()
     {
         yield return new WaitForSeconds(0.5f);
-        if (!PlayerControl.instance.isDead)
-            PlayerControl.instance.OnPlayerDamage(damge);
+        if (!PlayerControl.isDead && !MissionControl.isVictory)
+            PlayerControl.Instance.OnPlayerDamage(damge);
     }
 
     void OnDrawGizmos()

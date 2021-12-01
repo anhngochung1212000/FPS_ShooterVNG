@@ -2,17 +2,17 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class PlayerControl : MonoBehaviour
 {
-    public static PlayerControl instance;
+    public static PlayerControl Instance;
     int hp_;
     int totalHP;
 
-    public bool isHurt;
     AudioSource m_AudioSource;
-    public bool isDead;
+    public static bool isDead;
 
     public static event Action<int> onHPPlayerChange;
     [HideInInspector] public Transform trans;
@@ -40,7 +40,8 @@ public class PlayerControl : MonoBehaviour
 
     void Awake()
     {
-        instance = this;
+        Instance = this;
+        GameManager.onReloadGameData += OnReloadGameData;
         trans = transform;
         m_CharacterController = GetComponent<CharacterController>();
         m_AudioSource = GetComponent<AudioSource>();
@@ -49,12 +50,16 @@ public class PlayerControl : MonoBehaviour
         hp_ = totalHP;
     }
 
-    void Start()
+    void OnDestroy()
     {
+        GameManager.onReloadGameData -= OnReloadGameData;
     }
 
     void Update()
     {
+        if (isDead || MissionControl.isVictory)
+            return;
+
         // always move along the camera forward as it is the direction that it being aimed at
         Vector3 desiredMove = transform.forward * OnDragJoystick.inputDragTarget.y + transform.right * OnDragJoystick.inputDragTarget.x;
 
@@ -84,7 +89,6 @@ public class PlayerControl : MonoBehaviour
     {
         if (currentHP > 0)
         {
-            isHurt = true;
             currentHP -= damage;
         }
         if (!isDead && currentHP <= 0)
@@ -94,5 +98,11 @@ public class PlayerControl : MonoBehaviour
         }
     }
 
-    
+    async void OnReloadGameData()
+    {
+        await Task.Delay(200);
+        isDead = false;
+        currentHP = totalHP;
+        transform.position = SpawCharacterControl.PosPlayer.position;
+    }
 }

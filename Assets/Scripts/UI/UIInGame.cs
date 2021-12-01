@@ -7,11 +7,13 @@ public class UIInGame : MonoBehaviour
 {
     [SerializeField] Text textBulletAmo;
     [SerializeField] Text textHpValue;
+    [SerializeField] Text textEnemyCount;
     [SerializeField] Image imageGun;
     [SerializeField] Image imageGunIcon;
     [SerializeField] Button buttonChangeWeapon;
     [SerializeField] Button buttonFire;
     [SerializeField] Button buttonReload;
+    [SerializeField] Button buttonRePlay;
     [SerializeField] Toggle toggleAutoFire;
     [SerializeField] Image imageBlood;
     [SerializeField] RectTransform panelResult;
@@ -28,8 +30,6 @@ public class UIInGame : MonoBehaviour
             imageBlood.color = newColor;
             if (value != 0)
                 imageBlood.gameObject.SetActive(true);
-            else
-                PlayerControl.instance.isHurt = false;
         }
     }
 
@@ -39,9 +39,12 @@ public class UIInGame : MonoBehaviour
         WeaponControl.onChangeWeapon += OnChangedWeapon;
         WeaponControl.onUpdateBulletAmount += UpdateBulletOfGun;
         MissionControl.onPlayerVictory += OnPlayerVictory;
+        MissionControl.onEnemyDead += OnEnemyDead;
         buttonReload.onClick.AddListener(OnButtonReloadClick);
         buttonChangeWeapon.onClick.AddListener(OnButtonChangeWeaponClick);
+        buttonRePlay.onClick.AddListener(OnButtonReplayClick);
         toggleAutoFire.onValueChanged.AddListener(OnAutoFireClick);
+
     }
 
     void OnDestroy()
@@ -50,19 +53,29 @@ public class UIInGame : MonoBehaviour
         WeaponControl.onChangeWeapon -= OnChangedWeapon;
         MissionControl.onPlayerVictory -= OnPlayerVictory;
         WeaponControl.onUpdateBulletAmount -= UpdateBulletOfGun;
+        MissionControl.onEnemyDead -= OnEnemyDead;
         buttonChangeWeapon.onClick.RemoveListener(OnButtonChangeWeaponClick);
         buttonReload.onClick.RemoveListener(OnButtonReloadClick);
+        buttonRePlay.onClick.RemoveListener(OnButtonReplayClick);
         toggleAutoFire.onValueChanged.RemoveListener(OnAutoFireClick);
     }
 
     void OnHPPlayerChange(int currentHP)
     {
+        int d = int.Parse(textHpValue.text);
+
+        if(d <= currentHP)
+        {
+            textHpValue.text = PlayerControl.Instance.currentHP.ToString();
+            return;
+        }
+
         BloodAlpha += 0.8f;
         if (tween != null)
         {
             tween.Kill();
         }
-        int d = int.Parse(textHpValue.text);
+        
         tween = DOTween.To(() => d, x => d = x, currentHP, 0.1f).OnUpdate(() =>
         {
             textHpValue.text = d.ToString();
@@ -75,7 +88,7 @@ public class UIInGame : MonoBehaviour
     {
         yield return new WaitUntil(() => WeaponControl.currentWeapon != null);
         textBulletAmo.text = WeaponControl.currentWeapon.dataBase.clipSizeBullet + "/" + WeaponControl.currentWeapon.dataBase.totalBullet;
-        textHpValue.text = PlayerControl.instance.currentHP.ToString();
+        textHpValue.text = PlayerControl.Instance.currentHP.ToString();
         BloodAlpha = 0;
     }
 
@@ -121,6 +134,11 @@ public class UIInGame : MonoBehaviour
        
     }
 
+    void OnEnemyDead(int count,int total)
+    {
+        textEnemyCount.text = "Kill Enemy: " + count + "/" + total;
+    }
+
     void OnPlayerDead()
     {
         panelResult.gameObject.SetActive(true);
@@ -131,5 +149,12 @@ public class UIInGame : MonoBehaviour
     {
         panelResult.gameObject.SetActive(true);
         textResult.text = "You win!";
+    }
+
+    void OnButtonReplayClick()
+    {
+        GameManager.ReloadGameData();
+        panelResult.gameObject.SetActive(false);
+        textEnemyCount.text = "Kill Enemy: " + 0 + "/" + MissionControl.EnemyDead;
     }
 }

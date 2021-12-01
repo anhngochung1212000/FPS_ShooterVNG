@@ -8,15 +8,24 @@
 //------------------------------------------------------------------------------
 public static class GameComponentsLookup {
 
+    public const int GameView = 0;
+    public const int LocalPlayer = 1;
+    public const int SpawnEnemyPoint = 2;
+    public const int SpawnPoint = 3;
 
-
-    public const int TotalComponents = 0;
+    public const int TotalComponents = 4;
 
     public static readonly string[] componentNames = {
-
+        "GameView",
+        "LocalPlayer",
+        "SpawnEnemyPoint",
+        "SpawnPoint"
     };
 
     public static readonly System.Type[] componentTypes = {
-
+        typeof(GameViewComponent),
+        typeof(LocalPlayerComponent),
+        typeof(SpawnEnemyPointComponent),
+        typeof(SpawnPointComponent)
     };
 }

@@ -8,7 +8,7 @@
     "range": 50,
     "damage": 30,
     "accuracy": 80,
-    "rateOfFire": 120,
+    "rateOfFire": 130,
     "replaceBulletTime":2.5,
     "criticalRate": 50,
     "clipSizeBullet": 12,

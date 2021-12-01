@@ -7,11 +7,6 @@ using UnityEngine.UI;
 using UnityEditor;
 public class OnDragJoystick : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
-    public static OnDragJoystick instance;
-    private void Awake()
-    {
-        instance = this;
-    }
     public RectTransform rect_JS;
     public RectTransform rect_Knod;
     //[HideInInspector]
@@ -29,7 +24,7 @@ public class OnDragJoystick : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
     private Image knobBackground;
     public Image knobImage;
     private float ScreenUnitsToWorldUnitsConversionConstant;
-    private bool isDragging = true;
+    public static bool isDragging = true;
     private float CanvasScale;
     private bool bStart;
     private bool isDragByKeyBoard;
@@ -131,7 +126,9 @@ public class OnDragJoystick : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
                 ogrinPos = rect_JS.anchoredPosition;
             }
 
+
             bStart = true;
+
 
             knobBackground.CrossFadeAlpha(1f, 0.01f, true);
             knobImage.CrossFadeAlpha(1f, 0.01f, true);
@@ -154,17 +151,16 @@ public class OnDragJoystick : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
             RectTransformUtility.ScreenPointToLocalPointInRectangle(rect_JS, posMouse, eventData.pressEventCamera, out pos);
             pos.x = (pos.x / rect_JS.sizeDelta.x);
             pos.y = (pos.y / rect_JS.sizeDelta.y);
-            inputDragTarget = new Vector2(pos.x * 2, pos.y * 2);
+            inputDragTarget = new Vector2(pos.x * 2.5f, pos.y * 2.5f);
             inputDragTarget = inputDragTarget.magnitude > 1.0f ? inputDragTarget.normalized : inputDragTarget;
-            rect_Knod.anchoredPosition = new Vector2(inputDragTarget.x * (rect_JS.sizeDelta.x / 2), inputDragTarget.y * (rect_JS.sizeDelta.y / 2));
-
-            //inputDragTarget = new Vector2(pos.x * 2.5f, pos.y * 2.5f);
             //if (inputDragTarget.magnitude > 3f)
             //{
             //    inputDragTarget = inputDragTarget.normalized;
             //}
             //else
-            //    rect_Knod.anchoredPosition = new Vector2(inputDragTarget.x * (rect_JS.sizeDelta.x / 2), inputDragTarget.y * (rect_JS.sizeDelta.y / 2));
+            rect_Knod.anchoredPosition = new Vector2(inputDragTarget.x * (rect_JS.sizeDelta.x / 2), inputDragTarget.y * (rect_JS.sizeDelta.y / 2));
+
+
             //MoveJoystickWhenDragOut(eventData);
         }
 
@@ -184,18 +180,13 @@ public class OnDragJoystick : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
         inputDragTarget = Vector2.zero;
         rect_Knod.anchoredPosition = Vector2.zero;
         touchIndex = -1;
+        //if (Input.touchCount > 0)
+        //{
+        //    OnRotateCamera.indexTouch = 0;
+        //}
+        //else
+        //  OnRotateCamera.indexTouch = -1;
     }
-    
-    public void OnEndDrag()
-    {
-        InputJoystick.SetAxisMobile("Horizontal", 0);
-        InputJoystick.SetAxisMobile("Vertical", 0);
-        isDragging = true;
-        bStart = false;
-        knobBackground.CrossFadeAlpha(0f, 0.5f, true);
-        knobImage.CrossFadeAlpha(0f, 0.5f, true);
-        inputDragTarget = Vector2.zero;
-        rect_Knod.anchoredPosition = Vector2.zero;
-        
-    }
+
+
 }

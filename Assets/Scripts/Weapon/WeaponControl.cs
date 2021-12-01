@@ -15,7 +15,7 @@ public class WeaponControl : MonoBehaviour
 
     void Start()
     {
-        ConfigManager.InitGameData();
+        
 
         foreach (var configWeapon in ConfigManager.gunData)
         {
